@@ -9,14 +9,18 @@ Trabalho I - Matrizes Esparsas
 	- O usuário poderá fazer quantas operações desejar com as matrizes
 **/
 
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct nodo{
 	float dado;
 	int lin, col;
 	struct nodo *prox;
 }Matriz_Esparsa;
 
-void aloca_nodo(Matriz_Esparsa *m);
-void insere_lista(Matriz_Esparsa *m);
+//Protótipos
+Matriz_Esparsa aloca_nodo();
+void insere_lista(Matriz_Esparsa **m, float dado, int linha, int coluna);
 void busca_dados(Matriz_Esparsa *m);
 void libera_memoria(Matriz_Esparsa **m);
 void le_matriz(Matriz_Esparsa **m, int *tot_lin, int *tot_col);
@@ -27,11 +31,39 @@ void gera_transposta(Matriz_Esparsa **m);
 void imprime_matriz(Matriz_Esparsa *m);
 void imprime_diagonal(Matriz_Esparsa *m);
 
-void aloca_nodo(Matriz_Esparsa *m){
-	
+//Implementação
+
+Matriz_Esparsa aloca_nodo(){
+	Matriz_Esparsa *p; //Cria Nodo
+	p = (Matriz_Esparsa *) malloc(sizeof (Matriz_Esparsa)); //Aloca memória
+	if(!p){
+		printf("Problema de alocacao!");
+		exit(0);
+	}
+	return p;
 }
 
-void insere_lista(Matriz_Esparsa *m){
+void insere_lista(Matriz_Esparsa **m, float dado, int linha, int coluna){
+	Matriz_Esparsa *novo, *aux; // variaveis temporarias
+	novo = aloca_nodo(); // cria nodo
+	novo->dado = dado;
+	novo->lin = linha;
+	novo->col = coluna;
+	novo->prox = NULL;
+	
+	//Insere ordenado por linha e coluna
+	if((*m)->lin >= linha || (*m)->col >= coluna || *m == NULL){
+		novo->prox = *m; // insere antes do primeiro valor salvo
+		*m = novo;
+		return;
+	}
+	
+	aux = *m;
+	while(aux->prox != && aux->lin < linha && aux->col < coluna){
+		aux = aux->prox; // procura a maior posição salva
+	}
+	novo->prox = aux->prox; // insere antes da maior posição
+	aux->prox = novo;
 	
 }
 void busca_dados(Matriz_Esparsa *m){
@@ -43,6 +75,13 @@ void libera_memoria(Matriz_Esparsa **m){
 }
 
 void le_matriz(Matriz_Esparsa **m, int *tot_lin, int *tot_col){
+	printf("Total de linhas: ");
+	scanf("%d", tot_lin);
+	
+	printf("Total de colunas: ");
+	scanf("%d", tot_col);
+	
+	printf("\nDigite os dados diferentes de 0 e suas posições.\n Para finalizar a leitura, digite 0.");
 	
 }
 
