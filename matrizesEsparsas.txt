@@ -1,0 +1,76 @@
+// Ariane Oliveira Neves
+// Ysis Barduco Straub de Lima
+/** 
+Trabalho I - Matrizes Esparsas
+	Obervações:
+	- O usuário deve informar a dimensão das matrizes.
+	- Considerar as regras de operações com matrizes para implementar a soma, subtração, multiplicação, transposta e diagonal principal de matrizes.
+	- As listas encadeadas devem ser passadas como parâmetros das funções.
+	- O usuário poderá fazer quantas operações desejar com as matrizes
+**/
+
+typedef struct nodo{
+	float dado;
+	int lin, col;
+	struct nodo *prox;
+}Matriz_Esparsa;
+
+void aloca_nodo(Matriz_Esparsa *m);
+void insere_lista(Matriz_Esparsa *m);
+void busca_dados(Matriz_Esparsa *m);
+void libera_memoria(Matriz_Esparsa **m);
+void le_matriz(Matriz_Esparsa **m, int *tot_lin, int *tot_col);
+void soma_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2);
+void subtrai_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2);
+void mutiplica_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2);
+void gera_transposta(Matriz_Esparsa **m);
+void imprime_matriz(Matriz_Esparsa *m);
+void imprime_diagonal(Matriz_Esparsa *m);
+
+void aloca_nodo(Matriz_Esparsa *m){
+	
+}
+
+void insere_lista(Matriz_Esparsa *m){
+	
+}
+void busca_dados(Matriz_Esparsa *m){
+	
+}
+
+void libera_memoria(Matriz_Esparsa **m){
+	
+}
+
+void le_matriz(Matriz_Esparsa **m, int *tot_lin, int *tot_col){
+	
+}
+
+void soma_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2){
+	
+}
+
+void subtrai_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2){
+	
+}
+
+void mutiplica_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2){
+	
+}
+
+void gera_transposta(Matriz_Esparsa **m){
+	
+}
+
+void imprime_matriz(Matriz_Esparsa *m){
+	
+}
+
+void imprime_diagonal(Matriz_Esparsa *m){
+	
+}
+
+int main(){
+	
+	return 0;
+}
