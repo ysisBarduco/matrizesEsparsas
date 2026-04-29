@@ -34,7 +34,7 @@ void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna);
 void le_matriz(lista_matrizes **l);
 void le_dados(Matriz_Esparsa **m, int id);
 void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id);
-//buscar matriz na lista
+lista_matrizes *buscar_matriz(lista_matrizes *l);
 void buscar_dado(Matriz_Esparsa *m);
 void menu();
 
@@ -188,20 +188,44 @@ void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id){
 	}
 }
 
+lista_matrizes *buscar_matriz(lista_matrizes *l){
+	int id;
+	lista_matrizes *aux;
+
+	printf("ID da matriz: ");
+	scanf("%d", &id);
+
+	aux = l;
+	while(aux != NULL){
+		if(aux->id == id){
+			return aux;
+		}
+		else{
+			aux = aux->prox;
+		}
+	}
+	printf("\nMatriz nao encontrada!");
+	return NULL;
+}
+
 void buscar_dado(Matriz_Esparsa *m){
 	float dado;
+	Matriz_Esparsa *aux;
 
 	printf("\nBuscar dado: ");
 	scanf("%f", &dado);
 
-	while(m != NULL){
-		if(m->dado == dado){
-			printf("%.1f encontrado na linha %d e coluna %d.", dado, m->lin, m->col);
+	aux = m;
+	while(aux != NULL){
+		if(aux->dado == dado){
+			printf("%.1f encontrado na linha %d e coluna %d.", dado, aux->lin, aux->col);
+			return;
 		}
 		else{
-			m = m->prox;
+			aux = aux->prox;
 		}
 	}
+	printf("\nDado nao encontrado!");
 }
 
 void menu(){
@@ -218,6 +242,7 @@ void menu(){
 
 int main(){
 	lista_matrizes *matrizes;
+	lista_matrizes *matriz_atual;
 	int *tlinhas = NULL, *tcolunas = NULL;
 	int count_m = 0, opcao = 0;
 	int m = 0;
@@ -227,7 +252,6 @@ int main(){
 	do{
 		menu();
 		scanf("%d", &opcao);
-		printf("Selecionado: %d\n", opcao);
 
 		switch(opcao){
 			case 0: 
@@ -240,20 +264,23 @@ int main(){
 				break;
 
 			case 2:
-				// printf("\nQual matriz deseja imprimir? ");
-				// scanf("%d", &m);
+				matriz_atual = buscar_matriz(matrizes);
 
-				// if(m < 0 || m > count_m){
-				// 	printf("Matriz invalida!\n");
-				// 	break;
-				// }
+				if(matriz_atual != NULL){
+					imprime_matriz(matriz_atual->matriz, matriz_atual->tot_lin, matriz_atual->tot_col, matriz_atual->id);
+				}
 
-				// printf("\n---Matriz [%d]---\n\n", m);
-				// imprime_matriz(matrizes[m], tlinhas[m], tcolunas[m]);
 				break;
 
 			case 3:
-				buscar_dado(matrizes);
+				matriz_atual = buscar_matriz(matrizes);
+
+				if(matriz_atual != NULL){
+					buscar_dado(matriz_atual->matriz);
+				}
+				
+				break;
+
 			default: 
 				printf("Opcao invalida!\n");
 				break;
