@@ -18,152 +18,247 @@ typedef struct nodo{
 	struct nodo *prox;
 }Matriz_Esparsa;
 
+typedef struct navegacao{
+	int id;
+	Matriz_Esparsa *matriz;
+	int tot_lin, tot_col;
+	struct navegacao *prox;
+}lista_matrizes;
+
 //Protótipos
 Matriz_Esparsa *aloca_nodo();
-void insere_lista(Matriz_Esparsa **m, float dado, int linha, int coluna);
-void busca_dados(Matriz_Esparsa *m);
-void libera_memoria(Matriz_Esparsa **m);
-void le_matriz(Matriz_Esparsa **m, int *tot_lin, int *tot_col);
-void soma_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2);
-void subtrai_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2);
-void mutiplica_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2);
-void gera_transposta(Matriz_Esparsa **m);
-void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col);
-void imprime_diagonal(Matriz_Esparsa *m);
+lista_matrizes *aloca_navegacao();
+void inicializa_lista(lista_matrizes **l);
+void insere_lista(lista_matrizes **l, int id, int tot_lin, int tot_col);
+void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna);
+void le_matriz(lista_matrizes **l);
+void le_dados(Matriz_Esparsa **m, int id);
+void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id);
+//buscar matriz na lista
+void buscar_dado(Matriz_Esparsa *m);
+void menu();
 
 //Implementação
-
 Matriz_Esparsa *aloca_nodo(){
-	Matriz_Esparsa *p; //Cria Nodo
-	p = (Matriz_Esparsa *) malloc(sizeof (Matriz_Esparsa)); //Aloca mem�ria
+	Matriz_Esparsa *p;
+	p = (Matriz_Esparsa *) malloc(sizeof(Matriz_Esparsa));
+
 	if(!p){
-		printf("Problema de alocacao!");
+		printf("Problema de alocacao do Nodo!");
 		exit(0);
 	}
 	return p;
 }
 
-void insere_lista(Matriz_Esparsa **m, float dado, int linha, int coluna){
-	Matriz_Esparsa *novo, *aux; // variaveis temporarias
-	novo = aloca_nodo(); // chama função para criar o nodo
+lista_matrizes *aloca_navegacao(){
+	lista_matrizes *q;
+	q = (lista_matrizes *) malloc(sizeof(lista_matrizes));
+
+	if(!q){
+		printf("Problema de alocacao da Navegacao!");
+		exit(0);
+	}
+
+	return q;
+}
+
+void inicializa_lista(lista_matrizes **l){
+	*l = NULL; // lista inicializa vazia;
+}
+
+void insere_lista(lista_matrizes **l, int id, int tot_lin, int tot_col){
+	lista_matrizes *novo;
+
+	novo = aloca_navegacao();
+	novo->id = id;
+	novo->tot_lin = tot_lin;
+	novo->tot_col = tot_col;
+	novo->matriz = NULL; // inicializa matriz
+	le_dados(&novo->matriz, novo->id);
+
+	// insere novas matrizes no inicio
+	novo->prox = *l;
+	*l = novo;
+
+}
+
+void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna){
+
+	Matriz_Esparsa *novo, *aux;
+
+	novo = aloca_nodo();
 	novo->dado = dado;
 	novo->lin = linha;
 	novo->col = coluna;
 	novo->prox = NULL;
-	
-	//Insere ordenado por linha e coluna
-	if(*m == NULL || (*m)->lin > linha && (*m)->col > coluna){
-		novo->prox = *m; // insere antes do primeiro valor salvo
+
+	// Inserção ordenada por linha e coluna
+	if(*m == NULL || // verifica se está vazio
+	   (*m)->lin > linha || //linha menor
+	   ((*m)->lin == linha && (*m)->col > coluna)){ // mesma linha coluna menor
+
+		//inseri no começo
+		novo->prox = *m;
 		*m = novo;
 		return;
 	}
-	
+
 	aux = *m;
-	while(aux->prox != NULL && (aux->lin < linha || (aux->lin == linha && aux->col < coluna))){
-		aux = aux->prox; // procura a maior posição salva
+
+	while(aux->prox != NULL &&
+	     (aux->prox->lin < linha ||
+	     (aux->prox->lin == linha && aux->prox->col < coluna))){
+
+		aux = aux->prox; // para o próximo ponteiro da lista
 	}
-	novo->prox = aux->prox; // insere antes da posição maior
+
+	novo->prox = aux->prox;
 	aux->prox = novo;
-	
 }
 
-void busca_dados(Matriz_Esparsa *m){
-	
-}
+void le_matriz(lista_matrizes **l){
+	int id, tot_lin, tot_col;
 
-void libera_memoria(Matriz_Esparsa **m){
-	
-}
+	printf("Identificador numerico: ");
+	scanf("%d", &id);
 
-void le_matriz(Matriz_Esparsa **m, int *tot_lin, int *tot_col){
-   float dado = 0.00;
-   int linha = 0, coluna = 0;
-     
 	printf("Total de linhas: ");
-	scanf("%d", tot_lin);
-	
+	scanf("%d", &tot_lin);
+
 	printf("Total de colunas: ");
-	scanf("%d", tot_col);
-	
-	printf("\nDigite os dados diferentes de 0 e suas posições.\n Para finalizar a leitura, digite 0.");
-   do{ // solicita a entrada do usuário ao menos uma vez
-        printf("\nDado: ");
-        scanf("%f", &dado);
-         
-        if(dado == 0){
-             printf("\nLeitura finalizada!\n");
-             return; // garante que o dado 0 não seja salvo na lista
-        }
-         
-        printf("\nLinha: ");
-        scanf("%d", &linha);
-         
-        printf("\nColuna: ");
-        scanf("%d", &coluna);
-         
-        insere_lista(m, dado, linha, coluna); // chama a função para inserir o novo dado na lista
-         
-        printf("\n***\n");
+	scanf("%d", &tot_col);
 
-    }while(dado != 0); // encerra a execução quando o dado for 0
-   
-	
+	insere_lista(l, id, tot_lin, tot_col);
 }
 
-void soma_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2){
-	
+void le_dados(Matriz_Esparsa **m, int id){
+	float dado;
+	int linha, coluna;
+
+	printf("\n---Leitura da matriz [%d]---\n", id);
+	printf("Digite os dados diferentes de 0 e suas posições.\nPara finalizar digite 0.\n");
+
+	do{
+		printf("\nDado: ");
+		scanf("%f", &dado);
+
+		if(dado == 0){
+			printf("\nLeitura finalizada!\n");
+			return;
+		}
+
+		printf("Linha: ");
+		scanf("%d", &linha);
+
+		printf("Coluna: ");
+		scanf("%d", &coluna);
+
+		insere_matriz(m, dado, linha, coluna);
+
+	}while(dado != 0);
 }
 
-void subtrai_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2){
-	
-}
 
-void mutiplica_matriz(Matriz_Esparsa **m1, Matriz_Esparsa **m2){
-	
-}
-
-void gera_transposta(Matriz_Esparsa **m){
-	
-}
-
-void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col){
+void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id){
 	int i, j;
 	Matriz_Esparsa *aux;
-	
+
+	printf("\n--- MATRIZ %d ---\n", id);
+
 	if(m == NULL){
-      printf("\nMatriz vazia!\n");
-      return;
-      }
-	
+		printf("\nMatriz vazia!\n");
+		return;
+	}
+
 	aux = m;
 
-	for(i = 0; i < tot_lin; i++){ // para cada linha
-		for(j = 0; j < tot_col; j++){ // para cada coluna
-			if(aux != NULL && aux->lin == j && aux->col == i){ // imprime os dados da lista em suas posições na matriz
-				printf("%.2f ", aux->dado);
+	for(i = 1; i <= tot_lin; i++){
+		for(j = 1; j <= tot_col; j++){
+
+			// verifica se existe elemento nessa posição
+			if(aux != NULL && aux->lin == i && aux->col == j){
+				printf("%.1f ", aux->dado);
+				aux = aux->prox; // avança somente quando usa o nodo
 			}
-			else{ // imprime os 0
+			else{
 				printf("0.0 ");
 			}
+		}
+		printf("\n");
+	}
+}
+
+void buscar_dado(Matriz_Esparsa *m){
+	float dado;
+
+	printf("\nBuscar dado: ");
+	scanf("%f", &dado);
+
+	while(m != NULL){
+		if(m->dado == dado){
+			printf("%.1f encontrado na linha %d e coluna %d.", dado, m->lin, m->col);
+		}
+		else{
 			m = m->prox;
 		}
-		printf("\n"); // Mudança de linha
 	}
-	
 }
 
-void imprime_diagonal(Matriz_Esparsa *m){
-	
+void menu(){
+	printf("\n--- OPERACOES COM MATRIZES ---\n");
+	printf("1. Criar nova Matriz\n");
+	printf("2. Imprimir uma Matriz\n");
+	printf("3. Buscar a posicao de um dado\n");
+	printf("0. Sair\n");
+	printf("Digite uma opcao: ");
 }
+
+
+// ================= MAIN =================
 
 int main(){
-	// (!!!) Criar um array de matrizes para salvar mais de uma matriz
+	lista_matrizes *matrizes;
+	int *tlinhas = NULL, *tcolunas = NULL;
+	int count_m = 0, opcao = 0;
+	int m = 0;
 
-	Matriz_Esparsa *mat1;
-	int tlinhas, tcolunas;
-	
-	le_matriz(&mat1, &tlinhas, &tcolunas);
-	imprime_matriz(mat1, tlinhas, tcolunas);
-	
+	inicializa_lista(&matrizes);
+
+	do{
+		menu();
+		scanf("%d", &opcao);
+		printf("Selecionado: %d\n", opcao);
+
+		switch(opcao){
+			case 0: 
+				printf("Saindo...\n");
+				break;
+
+			case 1:
+				le_matriz(&matrizes);
+				imprime_matriz(matrizes->matriz, matrizes->tot_lin, matrizes->tot_col, matrizes->id);
+				break;
+
+			case 2:
+				// printf("\nQual matriz deseja imprimir? ");
+				// scanf("%d", &m);
+
+				// if(m < 0 || m > count_m){
+				// 	printf("Matriz invalida!\n");
+				// 	break;
+				// }
+
+				// printf("\n---Matriz [%d]---\n\n", m);
+				// imprime_matriz(matrizes[m], tlinhas[m], tcolunas[m]);
+				break;
+
+			case 3:
+				buscar_dado(matrizes);
+			default: 
+				printf("Opcao invalida!\n");
+				break;
+		}
+	}while(opcao != 0);
+
 	return 0;
 }
