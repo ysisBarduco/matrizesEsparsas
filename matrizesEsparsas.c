@@ -34,8 +34,11 @@ void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna);
 void le_matriz(lista_matrizes **l);
 void le_dados(Matriz_Esparsa **m, int id);
 void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id);
+void imprime_diagonal();
 lista_matrizes *buscar_matriz(lista_matrizes *l);
 void buscar_dado(Matriz_Esparsa *m);
+void apaga_matriz(lista_matrizes *l);
+void remove_dados_matriz(Matriz_Esparsa *m);
 void menu();
 
 //Implementação
@@ -188,6 +191,36 @@ void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id){
 	}
 }
 
+void imprime_diagonal(lista_matrizes *l){
+	int i, j;
+	lista_matrizes *matriz_atual;
+	Matriz_Esparsa *aux;
+
+	matriz_atual = buscar_matriz(l); // salva a posição da matriz
+	aux = matriz_atual->matriz; // salva a posição do primeiro nodo
+
+	printf("\n---Diagonal principal da matriz %d---\n", matriz_atual->id);
+
+	for(i = 1; i <= matriz_atual->tot_lin; i++){
+		for(j = 1; j <= matriz_atual->tot_col; j++){
+			if(i == j){
+				if(aux->lin == i && aux->col == j){
+					printf("%.1f ", aux->dado);
+					aux = aux->prox; // avança somente quando usa o nodo
+				}
+				else{
+					printf("0.0 ");
+				}
+			}
+			else{
+				printf("  ");
+			}
+		}
+		printf("\n");
+	}
+
+}
+
 lista_matrizes *buscar_matriz(lista_matrizes *l){
 	int id;
 	lista_matrizes *aux;
@@ -228,11 +261,24 @@ void buscar_dado(Matriz_Esparsa *m){
 	printf("\nDado nao encontrado!");
 }
 
+void apaga_matriz(lista_matrizes *l){
+	lista_matrizes *matriz_atual;
+	Matriz_Esparsa *aux;
+
+	matriz_atual = buscar_matriz(l);
+	
+}
+
+void remove_dados_matriz(Matriz_Esparsa *m){
+
+}
+
 void menu(){
 	printf("\n--- OPERACOES COM MATRIZES ---\n");
 	printf("1. Criar nova Matriz\n");
 	printf("2. Imprimir uma Matriz\n");
 	printf("3. Buscar a posicao de um dado\n");
+	printf("4. Imprime a diagona principal\n");
 	printf("0. Sair\n");
 	printf("Digite uma opcao: ");
 }
@@ -279,6 +325,10 @@ int main(){
 					buscar_dado(matriz_atual->matriz);
 				}
 				
+				break;
+
+			case 4:
+				imprime_diagonal(matrizes);
 				break;
 
 			default: 
