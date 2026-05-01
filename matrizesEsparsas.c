@@ -267,15 +267,38 @@ void buscar_dado(lista_matrizes *l){
 }
 
 void apaga_matriz(lista_matrizes *l){
-	lista_matrizes *matriz_atual;
-	Matriz_Esparsa *aux;
+	int id;
+	lista_matrizes *aux, *anterior;
 
-	matriz_atual = buscar_matriz(l);
+	printf("ID da matriz: ");
+	scanf("%d", &id);
+
+	aux = l;
+	while(aux != NULL){
+		anterior = aux;
+		aux = aux->prox;
+
+		if(aux != NULL && aux->id == id){
+			remove_dados_matriz(aux->matriz);
+			anterior->prox = aux->prox; // Pula o nodo
+			free(aux);
+			return;
+		}
+	}
+	printf("\nMatriz nao encontrada!");
 
 }
 
 void remove_dados_matriz(Matriz_Esparsa *m){
+	Matriz_Esparsa *aux, *proximo;
 
+	aux = m;
+	while(aux->prox != NULL){
+		proximo = aux->prox;
+		free(aux);
+		aux = proximo;
+	}
+	m = NULL;
 }
 
 void menu(){
@@ -284,6 +307,7 @@ void menu(){
 	printf("2. Imprimir uma Matriz\n");
 	printf("3. Buscar a posicao de um dado\n");
 	printf("4. Imprime a diagona principal\n");
+	printf("5. Apagar uma matriz\n");
 	printf("0. Sair\n");
 	printf("Digite uma opcao: ");
 }
@@ -330,7 +354,11 @@ int main(){
 			case 4:
 				imprime_diagonal(matrizes);
 				break;
-
+			
+			case 5:
+				apaga_matriz(matrizes);
+				break;
+				
 			default: 
 				printf("Opcao invalida!\n");
 				break;
