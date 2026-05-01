@@ -36,7 +36,7 @@ void le_dados(Matriz_Esparsa **m, int id);
 void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id);
 void imprime_diagonal();
 lista_matrizes *buscar_matriz(lista_matrizes *l);
-void buscar_dado(Matriz_Esparsa *m);
+void buscar_dado(lista_matrizes *l);
 void apaga_matriz(lista_matrizes *l);
 void remove_dados_matriz(Matriz_Esparsa *m);
 void menu();
@@ -46,7 +46,7 @@ Matriz_Esparsa *aloca_nodo(){
 	Matriz_Esparsa *p;
 	p = (Matriz_Esparsa *) malloc(sizeof(Matriz_Esparsa));
 
-	if(!p){
+	if(!p){ 
 		printf("Problema de alocacao do Nodo!");
 		exit(0);
 	}
@@ -241,24 +241,29 @@ lista_matrizes *buscar_matriz(lista_matrizes *l){
 	return NULL;
 }
 
-void buscar_dado(Matriz_Esparsa *m){
+void buscar_dado(lista_matrizes *l){
 	float dado;
+	lista_matrizes *matriz_atual;
 	Matriz_Esparsa *aux;
 
-	printf("\nBuscar dado: ");
-	scanf("%f", &dado);
+	matriz_atual = buscar_matriz(l);
+	aux = matriz_atual->matriz;
 
-	aux = m;
-	while(aux != NULL){
-		if(aux->dado == dado){
-			printf("%.1f encontrado na linha %d e coluna %d.", dado, aux->lin, aux->col);
-			return;
+	if(matriz_atual != NULL){
+		printf("\nBuscar dado: ");
+		scanf("%f", &dado);
+
+		while(aux != NULL){
+			if(aux->dado == dado){
+				printf("%.1f encontrado na linha %d e coluna %d.", dado, aux->lin, aux->col);
+				return;
+			}
+			else{
+				aux = aux->prox;
+			}
 		}
-		else{
-			aux = aux->prox;
-		}
+		printf("\nDado nao encontrado!");
 	}
-	printf("\nDado nao encontrado!");
 }
 
 void apaga_matriz(lista_matrizes *l){
@@ -266,7 +271,7 @@ void apaga_matriz(lista_matrizes *l){
 	Matriz_Esparsa *aux;
 
 	matriz_atual = buscar_matriz(l);
-	
+
 }
 
 void remove_dados_matriz(Matriz_Esparsa *m){
@@ -319,12 +324,7 @@ int main(){
 				break;
 
 			case 3:
-				matriz_atual = buscar_matriz(matrizes);
-
-				if(matriz_atual != NULL){
-					buscar_dado(matriz_atual->matriz);
-				}
-				
+				buscar_dado(matrizes);
 				break;
 
 			case 4:
