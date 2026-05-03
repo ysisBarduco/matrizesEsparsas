@@ -129,10 +129,7 @@ void le_dados(Matriz_Esparsa **m, int id){
 
 	do{ 
 		printf("\nDado: ");
-		while(scanf("%f", &dado) != 1){ // Se o dado digitado não for float
-			printf("Dado invalido!\n Digite o dado novamente: ");
-			while(getchar() != '\n'); // Limpa o buffer
-		}
+		scanf("%f", &dado);
 
 		if(dado == 0){
 			printf("Leitura finalizada!\n");
@@ -277,7 +274,7 @@ void busca_dado(Matriz_Esparsa *m){
     }
 
     if(!achou){
-        printf("Dado nÃ£o encontrado!");
+        printf("Dado nao encontrado!\n");
     }
 }
 
@@ -533,7 +530,7 @@ void matriz_transposta(Lista_Matrizes **l){
 
 void libera_matriz(Lista_Matrizes **l){
     int id = 0;
-    Lista_Matrizes *aux, *anterior;
+    Lista_Matrizes *aux, *anterior = NULL;
 
     printf("Digite a matriz: ");
     printf("ID: ");
@@ -552,7 +549,14 @@ void libera_matriz(Lista_Matrizes **l){
 
     if(aux != NULL && aux->id == id){
         apaga_dados(&aux->matriz);
-        anterior->prox = aux->prox;
+
+		if(anterior == NULL){
+			*l = aux->prox;
+		}
+		else{
+			anterior->prox = aux->prox;
+		}
+		
         free(aux);
         printf("\nMatriz [%d] liberada!", id);
         return;
@@ -652,7 +656,6 @@ int main(){
 
             default:
                 printf("Opcao invalida!\n\n");
-
         }
     }while(opcao != 0);
 
