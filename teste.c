@@ -14,9 +14,9 @@ typedef struct navegacao{
 	struct navegacao *prox;
 }lista_matrizes;
 
-//Protótipos
+//Protï¿½tipos
 void menu();
-// Operações da matriz
+// Operaï¿½ï¿½es da matriz
 Matriz_Esparsa *aloca_nodo();
 void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna);
 void le_dados(Matriz_Esparsa **m, int id);
@@ -30,7 +30,7 @@ void subtrai_matriz(lista_matrizes **j, int count_m);
 void mult_matriz(lista_matrizes **j, int count_m);
 void div_matriz(lista_matrizes **j, int count_m);
 void matriz_transposta(lista_matrizes **j);
-// Operação da lista
+// Operaï¿½ï¿½o da lista
 lista_matrizes *aloca_navegacao();
 void inicializa_lista(lista_matrizes **l);
 void insere_lista(lista_matrizes **l, int id, int tot_lin, int tot_col);
@@ -38,7 +38,7 @@ void le_matriz(lista_matrizes **l);
 lista_matrizes *buscar_matriz(lista_matrizes *l);
 void apaga_matriz(lista_matrizes *l);
 
-//Implementação
+//Implementaï¿½ï¿½o
 Matriz_Esparsa *aloca_nodo(){
 	Matriz_Esparsa *p;
 	p = (Matriz_Esparsa *) malloc(sizeof(Matriz_Esparsa));
@@ -93,12 +93,12 @@ void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna){
 	novo->col = coluna;
 	novo->prox = NULL;
 
-	// Inserção ordenada por linha e coluna
-	if(*m == NULL || // verifica se está vazio
+	// Inserï¿½ï¿½o ordenada por linha e coluna
+	if(*m == NULL || // verifica se estï¿½ vazio
 	   (*m)->lin > linha || //linha menor
 	   ((*m)->lin == linha && (*m)->col > coluna)){ // mesma linha coluna menor
 
-		//inseri no começo
+		//inseri no comeï¿½o
 		novo->prox = *m;
 		*m = novo;
 		return;
@@ -110,7 +110,7 @@ void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna){
 	     (aux->prox->lin < linha ||
 	     (aux->prox->lin == linha && aux->prox->col < coluna))){
 
-		aux = aux->prox; // para o próximo ponteiro da lista
+		aux = aux->prox; // para o prï¿½ximo ponteiro da lista
 	}
 
 	novo->prox = aux->prox;
@@ -137,7 +137,7 @@ void le_dados(Matriz_Esparsa **m, int id){
 	int linha, coluna;
 
 	printf("\n---Leitura da matriz [%d]---\n", id);
-	printf("Digite os dados diferentes de 0 e suas posições.\nPara finalizar digite 0.\n");
+	printf("Digite os dados diferentes de 0 e suas posiï¿½ï¿½es.\nPara finalizar digite 0.\n");
 
 	do{
 		printf("\nDado: ");
@@ -176,10 +176,10 @@ void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id){
 	for(i = 1; i <= tot_lin; i++){
 		for(j = 1; j <= tot_col; j++){
 
-			// verifica se existe elemento nessa posição
+			// verifica se existe elemento nessa posiï¿½ï¿½o
 			if(aux != NULL && aux->lin == i && aux->col == j){
 				printf("%.1f ", aux->dado);
-				aux = aux->prox; // avança somente quando usa o nodo
+				aux = aux->prox; // avanï¿½a somente quando usa o nodo
 			}
 			else{
 				printf("0.0 ");
@@ -194,8 +194,8 @@ void imprime_diagonal(lista_matrizes *l){
 	lista_matrizes *matriz_atual;
 	Matriz_Esparsa *aux;
 
-	matriz_atual = buscar_matriz(l); // salva a posição da matriz
-	aux = matriz_atual->matriz; // salva a posição do primeiro nodo
+	matriz_atual = buscar_matriz(l); // salva a posiï¿½ï¿½o da matriz
+	aux = matriz_atual->matriz; // salva a posiï¿½ï¿½o do primeiro nodo
 
 	printf("\n---Diagonal principal da matriz %d---\n", matriz_atual->id);
 
@@ -204,7 +204,7 @@ void imprime_diagonal(lista_matrizes *l){
 			if(i == j){
 				if(aux->lin == i && aux->col == j){
 					printf("%.1f ", aux->dado);
-					aux = aux->prox; // avança somente quando usa o nodo
+					aux = aux->prox; // avanï¿½a somente quando usa o nodo
 				}
 				else{
 					printf("0.0 ");
@@ -301,7 +301,7 @@ void soma_matriz(lista_matrizes **j, int count_m){
     m3 = buscar_matriz(*j);
 
 	if(m2 == NULL || m3 == NULL){
-    	printf("Matriz inválida");
+    	printf("Matriz invï¿½lida");
     	return;
 	}
 	
@@ -315,7 +315,9 @@ void soma_matriz(lista_matrizes **j, int count_m){
 
     while(h1 != NULL || h2 != NULL){
 
-        if(h1 != NULL && h2 != NULL && h1->lin == h2->lin && h1->col == h2->col){
+        if(h1 != NULL && h2 != NULL 
+			&& h1->lin == h2->lin 
+			&& h1->col == h2->col){
 
             insere_matriz(&resultado, h1->dado + h2->dado, h1->lin, h1->col);
 
@@ -426,7 +428,7 @@ void mult_matriz(lista_matrizes **j, int count_m){
         for(b = 1; b <= m3->tot_col; b++){
             r = 0;
             for(k = 1; k <= m2->tot_col; k++){
-                hA = m2->matriz;
+                hA = m2->matriz; 
                 hB = m3->matriz;
                 while(hA != NULL){
                     if(hA->lin == a && hA->col == k){
