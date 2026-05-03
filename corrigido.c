@@ -1,6 +1,12 @@
+/* TRABALHO I - Matrizes Esparsas
+    Ariane Oliveira Neves
+    Ysis Barduco Straub de Lima
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
+// Dados Abstratos
 typedef struct nodo{
 	float dado;
 	int lin, col;
@@ -8,40 +14,38 @@ typedef struct nodo{
 }Matriz_Esparsa;
 
 typedef struct navegacao{
-	int id;
-	Matriz_Esparsa *matriz;
-	int tot_lin, tot_col;
-	struct navegacao *prox;
-}lista_matrizes;
+    int id;
+    Matriz_Esparsa *matriz;
+    int tot_lin, tot_col;
+    struct navegacao *prox;
+}Lista_Matrizes;
 
 // Variveis globais
 int count_matrizes = 1;
 
-//Prototipos
+// Protótipos
 void menu();
-// Operacoes de matriz
+// Operações na matriz
 Matriz_Esparsa *aloca_nodo();
-void insere_matriz(Matriz_Esparsa **m, float dado, int linha, int coluna);
+void insere_matriz(Matriz_Esparsa **m, float dado, int lin, int col);
+void busca_dado(Matriz_Esparsa *m);
+void libera_matriz(Matriz_Esparsa **m);
 void le_dados(Matriz_Esparsa **m, int id);
-void imprime_matriz(Matriz_Esparsa *m, int tot_lin, int tot_col, int id);
-void imprime_diagonal();
-void buscar_dado(lista_matrizes *l);
-void remove_dados_matriz(Matriz_Esparsa *m);
-void adicionar_matriz(lista_matrizes **l, Matriz_Esparsa *resultado, int lin, int col,int id);
-void soma_matriz(lista_matrizes **j, int count_m);
-void subtrai_matriz(lista_matrizes **j, int count_m);
-void mult_matriz(lista_matrizes **j, int count_m);
-void div_matriz(lista_matrizes **j, int count_m);
-void matriz_transposta(lista_matrizes **j);
-// Operacoes de lista
-lista_matrizes *aloca_navegacao();
-void inicializa_lista(lista_matrizes **l);
-void insere_lista(lista_matrizes **l, int id, int tot_lin, int tot_col);
-void le_matriz(lista_matrizes **l);
-lista_matrizes *buscar_matriz(lista_matrizes *l);
-void apaga_matriz(lista_matrizes *l);
+int posicao_ocupada(Matriz_Esparsa *m, int lin, int col);
+void soma_matriz(Lista_Matrizes *l);
+void subtrai_matriz(Lista_Matrizes *l);
+void multiplica_matriz(Lista_Matrizes *l);
+void gera_transposta(Lista_Matrizes *l);
+void imprime_matriz(Matriz_Esparsa *m,int id, int tot_lin, int tot_col);
+void imprime_diagonal(Matriz_Esparsa *m,int id, int tot_lin, int tot_col);
+// Operações na lista de matrizes
+Lista_Matrizes *aloca_navegacao();
+void insere_lista(Lista_Matrizes **l, int id, int tot_lin, int tot_col);
+void le_matriz(Lista_Matrizes **l);
+Lista_Matrizes *busca_matriz(Lista_Matrizes *l);
+void libera_lista(Lista_Matrizes **l);
 
-// Implementacao
+// Implementação
 void menu(){
 	printf("\n--- OPERACOES COM MATRIZES ---\n");
 	printf("1.  Criar nova matriz\n");
@@ -71,9 +75,9 @@ Matriz_Esparsa *aloca_nodo(){
 
 }
 
-lista_matrizes *aloca_navegacao(){
-	lista_matrizes *q;
-	q = (lista_matrizes *) malloc(sizeof(lista_matrizes));
+Lista_Matrizes *aloca_navegacao(){
+	Lista_Matrizes *q;
+	q = (Lista_Matrizes *) malloc(sizeof(Lista_Matrizes));
 
 	if(!q){
 		printf("Problema de alocacao da Navegacao!");
@@ -83,9 +87,9 @@ lista_matrizes *aloca_navegacao(){
 	return q;
 }
 
-void le_matriz(lista_matrizes **l){
+void le_matriz(Lista_Matrizes **l){
     int id = 0, tot_lin = 0, tot_col = 0;
-    lista_matrizes *aux;
+    Lista_Matrizes *aux;
 	
     id = count_matrizes;
 
@@ -99,8 +103,8 @@ void le_matriz(lista_matrizes **l){
 
 }
 
-void insere_lista(lista_matrizes **l, int id, int tot_lin, int tot_col){
-    lista_matrizes *nova;
+void insere_lista(Lista_Matrizes **l, int id, int tot_lin, int tot_col){
+    Lista_Matrizes *nova;
 
     nova = aloca_navegacao();
     nova->id = id;
@@ -140,7 +144,7 @@ void le_dados(Matriz_Esparsa **m, int id){
             printf("Coluna: ");
             scanf("%d", &col);
  
-            ocupado = posicao_ocupada(*m, lin, col);
+            ocupado = (posicao_ocupada(*m, lin, col));
 
             if(ocupado){
                 printf("posicao [%d,%d] ja foi preencida!\n", lin, col);
@@ -183,8 +187,8 @@ void insere_matriz(Matriz_Esparsa **m, float dado, int lin, int col){
     novo->prox = NULL;
 
     if(*m == NULL || //Se a matriz estiver vazia
-        (*m)->lin > lin || // ou a linha atual Ã© menor
-        (*m)->lin == lin && (*m)->col > col){//ou na mesma linha, mas coluna maior
+        ((*m)->lin > lin || // ou a linha atual Ã© menor
+        ((*m)->lin == lin && (*m)->col > col))){//ou na mesma linha, mas coluna maior
 
         // Insere no comeÃ§o
         novo->prox = *m;
@@ -193,9 +197,9 @@ void insere_matriz(Matriz_Esparsa **m, float dado, int lin, int col){
     }
 
     aux = *m;
-    while(aux->prox != NULL && 
-        (aux->lin < lin || 
-        (aux->lin == lin && aux->col < col) )){
+    while(aux->prox != NULL &&
+	     (aux->prox->lin < lin ||
+	     (aux->prox->lin == lin && aux->prox->col < col))){
                 aux =aux->prox; // Percorre a lista
             }
     // Insere ordenado
@@ -230,78 +234,102 @@ void imprime_matriz(Matriz_Esparsa *m, int id, int tot_lin, int tot_col){
 
 }
 
+Lista_Matrizes *busca_matriz(Lista_Matrizes *l){
+    int id;
+    Lista_Matrizes *aux;
 
-// ================= MAIN =================
+	printf("ID da matriz: ");
+	scanf("%d", &id);
 
+    aux = l;
+    while(aux != NULL){
+        if(aux->id == id){
+            return aux;
+        }
+        else{
+            aux = aux->prox;
+        }
+    }
+
+    printf("\nMatriz nao encontrada!");
+    return NULL;
+}
+
+void busca_dado(Matriz_Esparsa *m){
+    Matriz_Esparsa *aux;
+    float dado = 0.0;
+    int achou = 0;
+
+    printf("Dado: ");
+    scanf("%f", &dado);
+    
+    aux = m;
+    while(aux != NULL){
+        if(aux->dado == dado){
+            printf("Dado %.1f encontrado na posicao [%d,%d]\n", dado, aux->lin, aux->col);
+            achou = 1;
+        }
+        
+        aux = aux->prox;
+    }
+
+    if(!achou){
+        printf("Dado não encontrado!");
+    }
+}
+
+//---------------------- Execução ---------------------
 int main(){
-	lista_matrizes *matrizes;
-	lista_matrizes *matriz_atual;
-	int *tlinhas = NULL, *tcolunas = NULL;
-	int opcao = 0;
-	int m = 0;
+    Lista_Matrizes *matrizes, *matriz_atual;
+    int opcao = 0;
 
-	inicializa_lista(&matrizes);
+    do{
+        menu();
+        scanf("%d", &opcao);
 
-	do{
-		menu();
-		scanf("%d", &opcao);
+        switch(opcao){
+            case 0:
+                printf("Encerrando...");
+                break;
 
-		switch(opcao){
-			case 0: 
-				printf("Saindo...\n");
-				break;
+            case 1:
+                le_matriz(&matrizes);
+                imprime_matriz(matrizes->matriz, matrizes->id, matrizes->tot_lin, matrizes->tot_col);
+                break;
 
-			case 1:
-				le_matriz(&matrizes);
-				imprime_matriz(matrizes->matriz, matrizes->tot_lin, matrizes->tot_col, matrizes->id);
-				break;
+            case 2:
+                matriz_atual = busca_matriz(matrizes);
+                if(matriz_atual != NULL){
+                    imprime_matriz(matriz_atual->matriz, matriz_atual->id, matriz_atual->tot_lin, matriz_atual->tot_col);
+                }
+                break;
 
-			case 2:
-				matriz_atual = buscar_matriz(matrizes);
+            case 3:
+                matriz_atual = busca_matriz(matrizes);
+                if(matriz_atual != NULL){
+                    busca_dado(matriz_atual->matriz);
+                }
+                break;
 
-				if(matriz_atual != NULL){
-					imprime_matriz(matriz_atual->matriz, matriz_atual->tot_lin, matriz_atual->tot_col, matriz_atual->id);
-				}
+            case 4:
+                
+                break;
 
-				break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+            default:
+                printf("Opcao invalida!\n\n");
 
-			case 3:
-				buscar_dado(matrizes);
-				break;
+        }
+    }while(opcao != 0);
 
-			case 4:
-				imprime_diagonal(matrizes);
-				break;
-			
-      		case 5:
-			    soma_matriz( &matrizes, count_matrizes);
-			    break;
-			
-			case 6:
-			    subtrai_matriz(&matrizes, count_matrizes);
-			    break;
-			
-			case 7:
-			    mult_matriz(&matrizes, count_matrizes);
-			    break;
-			
-			case 8:
-			    matriz_transposta(&matrizes);
-			    break;
-			    
-			case 9:
-				matriz_atual = buscar_matriz(matrizes);
-
-			    if(matriz_atual != NULL){
-			        remove_dados_matriz(matriz_atual->matriz);
-			    }
-				break;
-				
-			default: 
-				printf("Opcao invalida!\n");
-				break;
-		}
-	}while(opcao != 0);
-
-	return 0;
+    return 0;
 }
