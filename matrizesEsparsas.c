@@ -291,22 +291,29 @@ void imprime_diagonal(Matriz_Esparsa *m,int id, int tot_lin, int tot_col){
 	
 	    aux = m;
 	    printf("\n---Diagonal principal da matriz [%d]---\n", id);
-	    for(i=1; i <= tot_lin; i++){ // Para cada linha
-	        for(j=1; j <= tot_col; j++){ // Para cada coluna
-	            if(i == j){
-	                if(aux != NULL && aux->lin == i && aux->col == j ){
-	                    printf("%.1f ", aux->dado);
-	                    aux = aux->prox; // Avanca quando o nodo for utilizado
-	                }
-	                 else{
-	                    printf("0.0 ");
-	                }
-	            }
-	            else{
-	                printf("  ");
-	            }
-	        }
-	        printf("\n");
+	    for(i = 1; i <= tot_lin; i++){ // i representa posição de linha e coluna
+            for(j = 1; j <= tot_col; j++){ // Para formatação da saida
+                if(i == j){
+                    while(aux != NULL && (aux->lin < i || (aux->lin == i && aux->col < i))){
+                        aux = aux->prox; // Avança até encontrar um nodo na posição (i,i)
+                    }
+
+                    if(aux != NULL && aux->lin == i && aux->col == i){
+                        printf("%.1f ", aux->dado);
+                        aux = aux->prox;
+                    }
+
+                    else{
+                        printf("0.0 ");
+                    }
+                    
+                }
+                else{
+                    printf(" ");
+                }
+            }
+            
+            printf("\n");
 	    }
 	}
 	else{
